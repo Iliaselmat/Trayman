@@ -1,0 +1,127 @@
+export default {
+  appName: 'TrayMS',
+
+  // Nav
+  dashboard: 'Tableau de bord',
+  users: 'Utilisateurs',
+  items: 'Articles',
+  clients: 'Clients',
+  orders: 'Commandes',
+  myClients: 'Mes Clients',
+  myOrders: 'Mes Commandes',
+  adminPanel: 'Panneau Admin',
+  delivererPanel: 'Panneau Livreur',
+  logout: 'Déconnexion',
+
+  // Common actions
+  add: 'Ajouter',
+  edit: 'Modifier',
+  delete: 'Supprimer',
+  save: 'Enregistrer',
+  cancel: 'Annuler',
+  confirm: 'Confirmer',
+  create: 'Créer',
+  view: 'Voir',
+  clear: 'Effacer',
+  exportExcel: 'Exporter CSV',
+  loading: 'Chargement…',
+
+  // Common fields
+  name: 'Nom',
+  phone: 'Téléphone',
+  address: 'Adresse',
+  date: 'Date',
+  actions: 'Actions',
+  status: 'Statut',
+
+  // Statuses
+  processing: 'En cours',
+  delivered: 'Livré',
+  cancelled: 'Annulé',
+
+  // Dashboard
+  totalUsers: 'Utilisateurs',
+  deliverers: 'Livreurs',
+  totalOrders: 'Commandes',
+  ordersOverview: 'Aperçu des commandes',
+  welcome: 'Bienvenue',
+  deliveryOverview: 'Voici votre aperçu des livraisons',
+
+  // Users
+  addUser: 'Ajouter un utilisateur',
+  editUser: "Modifier l'utilisateur",
+  username: "Nom d'utilisateur",
+  role: 'Rôle',
+  created: 'Créé le',
+  fullName: 'Nom complet',
+  password: 'Mot de passe',
+  newPassword: 'Nouveau mot de passe (laisser vide pour conserver)',
+  noUsersFound: 'Aucun utilisateur trouvé',
+  deleteUserConfirm: 'Supprimer cet utilisateur ?',
+
+  // Items
+  addItem: 'Ajouter un article',
+  editItem: "Modifier l'article",
+  reference: 'Référence',
+  category: 'Catégorie',
+  price: 'Prix',
+  weights: 'Poids',
+  availableWeights: 'Poids disponibles',
+  noItemsYet: 'Aucun article pour le moment',
+  deleteItemConfirm: 'Supprimer cet article ?',
+  selectOneWeight: 'Sélectionner au moins un poids',
+
+  // Clients
+  addClient: 'Ajouter un client',
+  assignedTo: 'Assigné à',
+  unassigned: 'Non assigné',
+  assign: 'Assigner',
+  selectDeliverer: 'Sélectionner un livreur',
+  unassignOption: '— Désassigner —',
+  noClientsFound: 'Aucun client trouvé',
+  noClientsYet: 'Aucun client pour le moment',
+  phoneNumber: 'Numéro de téléphone',
+  added: 'Ajouté le',
+
+  // GPS
+  gpsLocation: 'Position GPS',
+  getLocation: 'Obtenir la position GPS',
+  gettingLocation: 'Obtention de la position…',
+  locationCollected: 'Position collectée',
+  locationDenied: "Accès GPS refusé. Veuillez autoriser la localisation pour ce site dans les paramètres de votre navigateur, puis réessayez.",
+  locationError: 'Impossible d\'obtenir la position. Assurez-vous que le GPS est activé et réessayez.',
+  locationRequired: 'La position GPS est requise pour ajouter un client',
+  viewOnMap: 'Voir sur la carte',
+  noLocation: 'Pas de GPS',
+  retryLocation: 'Réessayer',
+
+  // Orders
+  addOrder: 'Ajouter une commande',
+  newOrder: 'Nouvelle commande',
+  allStatuses: 'Tous les statuts',
+  from: 'Du',
+  to: 'Au',
+  orderId: 'ID',
+  client: 'Client',
+  deliverer: 'Livreur',
+  orderDetails: 'Détails de la commande',
+  noOrdersFound: 'Aucune commande trouvée',
+  noOrdersYet: 'Aucune commande pour le moment',
+  addItemRow: '+ Ajouter un article',
+  selectClient: 'Sélectionner un client',
+  selectItem: 'Sélectionner un article',
+  selectWeight: 'Sélectionner le poids',
+  qty: 'Qté',
+  createOrder: 'Créer la commande',
+  markDelivered: 'Livré',
+  markCancelled: 'Annuler',
+
+  // Login
+  loginTitle: 'Système de gestion de fabrication',
+  signingIn: 'Connexion…',
+  signIn: 'Se connecter',
+  loginFailed: 'Échec de la connexion',
+
+  // Language toggle label
+  switchLang: 'EN',
+}

@@ -1,0 +1,127 @@
+export default {
+  appName: 'TrayMS',
+
+  // Nav
+  dashboard: 'Dashboard',
+  users: 'Users',
+  items: 'Items',
+  clients: 'Clients',
+  orders: 'Orders',
+  myClients: 'My Clients',
+  myOrders: 'My Orders',
+  adminPanel: 'Admin Panel',
+  delivererPanel: 'Deliverer Panel',
+  logout: 'Logout',
+
+  // Common actions
+  add: 'Add',
+  edit: 'Edit',
+  delete: 'Delete',
+  save: 'Save',
+  cancel: 'Cancel',
+  confirm: 'Confirm',
+  create: 'Create',
+  view: 'View',
+  clear: 'Clear',
+  exportExcel: 'Export CSV',
+  loading: 'Loading…',
+
+  // Common fields
+  name: 'Name',
+  phone: 'Phone',
+  address: 'Address',
+  date: 'Date',
+  actions: 'Actions',
+  status: 'Status',
+
+  // Statuses
+  processing: 'Processing',
+  delivered: 'Delivered',
+  cancelled: 'Cancelled',
+
+  // Dashboard
+  totalUsers: 'Total Users',
+  deliverers: 'Deliverers',
+  totalOrders: 'Total Orders',
+  ordersOverview: 'Orders Overview',
+  welcome: 'Welcome',
+  deliveryOverview: "Here's your delivery overview",
+
+  // Users
+  addUser: 'Add User',
+  editUser: 'Edit User',
+  username: 'Username',
+  role: 'Role',
+  created: 'Created',
+  fullName: 'Full Name',
+  password: 'Password',
+  newPassword: 'New Password (leave blank to keep)',
+  noUsersFound: 'No users found',
+  deleteUserConfirm: 'Delete this user?',
+
+  // Items
+  addItem: 'Add Item',
+  editItem: 'Edit Item',
+  reference: 'Reference',
+  category: 'Category',
+  price: 'Price',
+  weights: 'Weights',
+  availableWeights: 'Available Weights',
+  noItemsYet: 'No items yet',
+  deleteItemConfirm: 'Delete this item?',
+  selectOneWeight: 'Select at least one weight',
+
+  // Clients
+  addClient: 'Add Client',
+  assignedTo: 'Assigned To',
+  unassigned: 'Unassigned',
+  assign: 'Assign',
+  selectDeliverer: 'Select Deliverer',
+  unassignOption: '— Unassign —',
+  noClientsFound: 'No clients found',
+  noClientsYet: 'No clients yet',
+  phoneNumber: 'Phone Number',
+  added: 'Added',
+
+  // GPS
+  gpsLocation: 'GPS Location',
+  getLocation: 'Get GPS Location',
+  gettingLocation: 'Getting your location…',
+  locationCollected: 'Location collected',
+  locationDenied: 'GPS access denied. Please enable location permissions for this site in your browser settings, then try again.',
+  locationError: 'Could not get location. Make sure GPS is enabled and try again.',
+  locationRequired: 'GPS location is required to add a client',
+  viewOnMap: 'View on Map',
+  noLocation: 'No GPS',
+  retryLocation: 'Retry',
+
+  // Orders
+  addOrder: 'Add Order',
+  newOrder: 'New Order',
+  allStatuses: 'All Statuses',
+  from: 'From',
+  to: 'To',
+  orderId: 'ID',
+  client: 'Client',
+  deliverer: 'Deliverer',
+  orderDetails: 'Order Details',
+  noOrdersFound: 'No orders found',
+  noOrdersYet: 'No orders yet',
+  addItemRow: '+ Add item',
+  selectClient: 'Select a client',
+  selectItem: 'Select item',
+  selectWeight: 'Select weight',
+  qty: 'Qty',
+  createOrder: 'Create Order',
+  markDelivered: 'Delivered',
+  markCancelled: 'Cancel',
+
+  // Login
+  loginTitle: 'Manufacturing Management System',
+  signingIn: 'Signing in…',
+  signIn: 'Sign In',
+  loginFailed: 'Login failed',
+
+  // Language toggle label
+  switchLang: 'FR',
+}

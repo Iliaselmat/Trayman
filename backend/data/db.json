@@ -1,0 +1,74 @@
+{
+  "users": [
+    {
+      "id": "8bae958f-ecf9-468d-8275-3ee7dfef494b",
+      "username": "admin",
+      "password": "$2a$10$5jGkYPEu8gk36PW5mOaSs.VZg4VmfSnr7RtbtnmQnsj0E1duIAIHu",
+      "name": "Administrator",
+      "role": "admin",
+      "createdAt": "2026-04-22T04:29:03.375Z"
+    },
+    {
+      "id": "cfa31f83-7139-4cf2-8600-8d1602f11681",
+      "username": "ILIAS",
+      "password": "$2a$10$4xTeqqDAqL1oW3wmZ3wz5.ZazF.SmiVB59b4mkZ661gwS2C0KrGNG",
+      "name": "ilias",
+      "role": "deliverer",
+      "createdAt": "2026-04-22T04:31:06.554Z"
+    }
+  ],
+  "items": [
+    {
+      "id": "5cb81681-581c-4cc6-87a5-2806002a64e1",
+      "name": "barquette",
+      "reference": "BR100",
+      "category": "BARQUETTE",
+      "price": 50,
+      "weights": [
+        "0.25kg",
+        "0.5kg",
+        "1kg"
+      ],
+      "createdAt": "2026-04-22T04:32:40.675Z"
+    }
+  ],
+  "clients": [
+    {
+      "id": "0279d1fa-e57e-4ae5-b746-70121d8c578f",
+      "name": "HOWARI",
+      "phone": "0611333247",
+      "address": "Hay Al Azhar, Al Badr.",
+      "createdBy": "cfa31f83-7139-4cf2-8600-8d1602f11681",
+      "assignedTo": "cfa31f83-7139-4cf2-8600-8d1602f11681",
+      "createdAt": "2026-04-22T04:34:31.350Z"
+    },
+    {
+      "id": "221890b1-9426-47be-a337-a5adc5ad95e4",
+      "name": "ilias",
+      "phone": "06666666",
+      "address": "HISTORY",
+      "lat": 35.90201908784388,
+      "lng": -79.04692836893696,
+      "createdBy": "cfa31f83-7139-4cf2-8600-8d1602f11681",
+      "assignedTo": "cfa31f83-7139-4cf2-8600-8d1602f11681",
+      "createdAt": "2026-04-22T22:45:32.381Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "fbed22d1-4e1a-4be9-99ce-f11454e590a0",
+      "clientId": "0279d1fa-e57e-4ae5-b746-70121d8c578f",
+      "delivererId": "cfa31f83-7139-4cf2-8600-8d1602f11681",
+      "items": [
+        {
+          "itemId": "5cb81681-581c-4cc6-87a5-2806002a64e1",
+          "quantity": 50,
+          "weight": "0.25kg"
+        }
+      ],
+      "status": "cancelled",
+      "createdAt": "2026-04-22T04:34:52.931Z",
+      "updatedAt": "2026-04-22T04:35:11.640Z"
+    }
+  ]
+}
