@@ -23,6 +23,9 @@ export default function AdminClients() {
   const [deliverers, setDeliverers] = useState([])
   const [assignModal, setAssignModal] = useState(null)
   const [selectedDeliverer, setSelectedDeliverer] = useState('')
+  const [editModal, setEditModal] = useState(null)
+  const [editForm, setEditForm] = useState({ name: '', phone: '', address: '' })
+  const [editError, setEditError] = useState('')
 
   async function load() {
     const [c, u] = await Promise.all([api.get('/clients'), api.get('/users')])
@@ -38,6 +41,30 @@ export default function AdminClients() {
   async function handleAssign() {
     await api.patch(`/clients/${assignModal.id}/assign`, { delivererId: selectedDeliverer || null })
     setAssignModal(null)
+    load()
+  }
+
+  function openEdit(client) {
+    setEditForm({ name: client.name, phone: client.phone, address: client.address })
+    setEditError('')
+    setEditModal(client)
+  }
+
+  async function handleEdit(e) {
+    e.preventDefault()
+    setEditError('')
+    try {
+      await api.put(`/clients/${editModal.id}`, editForm)
+      setEditModal(null)
+      load()
+    } catch (err) {
+      setEditError(err.response?.data?.message || 'Error')
+    }
+  }
+
+  async function handleDelete(id) {
+    if (!confirm(t('deleteClientConfirm'))) return
+    await api.delete(`/clients/${id}`)
     load()
   }
 
@@ -61,8 +88,8 @@ export default function AdminClients() {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
+        <table className="w-full min-w-[700px] text-sm">
           <thead className="bg-gray-50 border-b">
             <tr>
               {[t('name'), t('phone'), t('address'), t('gpsLocation'), t('assignedTo'), t('actions')].map(h => (
@@ -98,12 +125,26 @@ export default function AdminClients() {
                   }
                 </td>
                 <td className="px-6 py-4">
-                  <button
-                    onClick={() => { setAssignModal(c); setSelectedDeliverer(c.assignedTo || '') }}
-                    className="text-blue-600 hover:underline text-sm"
-                  >
-                    {t('assign')}
-                  </button>
+                  <div className="flex gap-3 flex-wrap">
+                    <button
+                      onClick={() => { setAssignModal(c); setSelectedDeliverer(c.assignedTo || '') }}
+                      className="text-blue-600 hover:underline text-sm"
+                    >
+                      {t('assign')}
+                    </button>
+                    <button
+                      onClick={() => openEdit(c)}
+                      className="text-indigo-600 hover:underline text-sm"
+                    >
+                      {t('edit')}
+                    </button>
+                    <button
+                      onClick={() => handleDelete(c.id)}
+                      className="text-red-500 hover:underline text-sm"
+                    >
+                      {t('delete')}
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -139,6 +180,50 @@ export default function AdminClients() {
               </button>
             </div>
           </div>
+        </Modal>
+      )}
+
+      {editModal && (
+        <Modal title={`${t('editClient')}: ${editModal.name}`} onClose={() => setEditModal(null)}>
+          <form onSubmit={handleEdit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('name')}</label>
+              <input
+                value={editForm.name}
+                onChange={e => setEditForm({ ...editForm, name: e.target.value })}
+                className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('phone')}</label>
+              <input
+                type="tel"
+                value={editForm.phone}
+                onChange={e => setEditForm({ ...editForm, phone: e.target.value })}
+                className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('address')}</label>
+              <input
+                value={editForm.address}
+                onChange={e => setEditForm({ ...editForm, address: e.target.value })}
+                className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            {editError && <p className="text-red-500 text-sm">{editError}</p>}
+            <div className="flex gap-3 pt-2">
+              <button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium">
+                {t('save')}
+              </button>
+              <button type="button" onClick={() => setEditModal(null)} className="flex-1 border border-gray-300 py-2 rounded-lg text-gray-600 hover:bg-gray-50">
+                {t('cancel')}
+              </button>
+            </div>
+          </form>
         </Modal>
       )}
     </div>

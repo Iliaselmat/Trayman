@@ -102,8 +102,8 @@ export default function AdminItems() {
           </button>
         </div>
       </div>
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
+        <table className="w-full min-w-[600px] text-sm">
           <thead className="bg-gray-50 border-b">
             <tr>
               {[t('name'), t('reference'), t('category'), t('price'), t('weights'), t('actions')].map(h => (

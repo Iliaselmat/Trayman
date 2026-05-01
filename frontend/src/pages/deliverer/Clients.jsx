@@ -170,8 +170,8 @@ export default function DelivererClients() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
+        <table className="w-full min-w-[560px] text-sm">
           <thead className="bg-gray-50 border-b">
             <tr>
               {[t('name'), t('phone'), t('address'), t('gpsLocation'), t('added')].map(h => (

@@ -73,6 +73,8 @@ export default {
 
   // Clients
   addClient: 'Ajouter un client',
+  editClient: 'Modifier le client',
+  deleteClientConfirm: 'Supprimer ce client ?',
   assignedTo: 'Assigné à',
   unassigned: 'Non assigné',
   assign: 'Assigner',

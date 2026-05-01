@@ -150,8 +150,8 @@ export default function AdminOrders() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
+        <table className="w-full min-w-[600px] text-sm">
           <thead className="bg-gray-50 border-b">
             <tr>
               {[t('orderId'), t('client'), t('deliverer'), t('status'), t('date'), t('actions')].map(h => (
