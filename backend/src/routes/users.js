@@ -1,17 +1,22 @@
 const express = require('express')
 const bcrypt = require('bcryptjs')
 const { v4: uuidv4 } = require('uuid')
-const { readDb, writeDb } = require('../db')
+const { getDb } = require('../db')
 const { authenticate, requireAdmin } = require('../middleware/auth')
 
 const router = express.Router()
-
 router.use(authenticate, requireAdmin)
 
-router.get('/', (req, res) => {
-  const db = readDb()
-  const users = db.users.map(({ password, ...rest }) => rest)
-  res.json(users)
+router.get('/', async (req, res) => {
+  try {
+    const db = await getDb()
+    const users = await db.collection('users')
+      .find({}, { projection: { password: 0, _id: 0 } })
+      .toArray()
+    res.json(users)
+  } catch (e) {
+    res.status(500).json({ message: 'Server error' })
+  }
 })
 
 router.post('/', async (req, res) => {
@@ -22,45 +27,49 @@ router.post('/', async (req, res) => {
   if (!['admin', 'deliverer'].includes(role)) {
     return res.status(400).json({ message: 'Role must be admin or deliverer' })
   }
-  const db = readDb()
-  if (db.users.find(u => u.username === username)) {
-    return res.status(409).json({ message: 'Username already exists' })
+  try {
+    const db = await getDb()
+    const existing = await db.collection('users').findOne({ username })
+    if (existing) return res.status(409).json({ message: 'Username already exists' })
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const newUser = { id: uuidv4(), username, password: hashedPassword, name, role, createdAt: new Date().toISOString() }
+    await db.collection('users').insertOne(newUser)
+    const { password: _, _id, ...safe } = newUser
+    res.status(201).json(safe)
+  } catch (e) {
+    res.status(500).json({ message: 'Server error' })
   }
-  const hashedPassword = await bcrypt.hash(password, 10)
-  const newUser = {
-    id: uuidv4(),
-    username,
-    password: hashedPassword,
-    name,
-    role,
-    createdAt: new Date().toISOString()
-  }
-  db.users.push(newUser)
-  writeDb(db)
-  const { password: _, ...userWithoutPassword } = newUser
-  res.status(201).json(userWithoutPassword)
 })
 
 router.put('/:id', async (req, res) => {
   const { name, password, role } = req.body
-  const db = readDb()
-  const idx = db.users.findIndex(u => u.id === req.params.id)
-  if (idx === -1) return res.status(404).json({ message: 'User not found' })
-  if (name) db.users[idx].name = name
-  if (role && ['admin', 'deliverer'].includes(role)) db.users[idx].role = role
-  if (password) db.users[idx].password = await bcrypt.hash(password, 10)
-  writeDb(db)
-  const { password: _, ...userWithoutPassword } = db.users[idx]
-  res.json(userWithoutPassword)
+  try {
+    const db = await getDb()
+    const update = {}
+    if (name) update.name = name
+    if (role && ['admin', 'deliverer'].includes(role)) update.role = role
+    if (password) update.password = await bcrypt.hash(password, 10)
+    const result = await db.collection('users').findOneAndUpdate(
+      { id: req.params.id },
+      { $set: update },
+      { returnDocument: 'after', projection: { password: 0, _id: 0 } }
+    )
+    if (!result) return res.status(404).json({ message: 'User not found' })
+    res.json(result)
+  } catch (e) {
+    res.status(500).json({ message: 'Server error' })
+  }
 })
 
-router.delete('/:id', (req, res) => {
-  const db = readDb()
-  const idx = db.users.findIndex(u => u.id === req.params.id)
-  if (idx === -1) return res.status(404).json({ message: 'User not found' })
-  db.users.splice(idx, 1)
-  writeDb(db)
-  res.json({ message: 'User deleted' })
+router.delete('/:id', async (req, res) => {
+  try {
+    const db = await getDb()
+    const result = await db.collection('users').deleteOne({ id: req.params.id })
+    if (result.deletedCount === 0) return res.status(404).json({ message: 'User not found' })
+    res.json({ message: 'User deleted' })
+  } catch (e) {
+    res.status(500).json({ message: 'Server error' })
+  }
 })
 
 module.exports = router

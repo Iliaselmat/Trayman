@@ -1,82 +1,101 @@
 const express = require('express')
 const { v4: uuidv4 } = require('uuid')
-const { readDb, writeDb } = require('../db')
+const { getDb } = require('../db')
 const { authenticate, requireAdmin } = require('../middleware/auth')
 
 const router = express.Router()
-
 router.use(authenticate)
 
-router.get('/', (req, res) => {
-  const db = readDb()
-  if (req.user.role === 'admin') {
-    res.json(db.clients)
-  } else {
-    res.json(db.clients.filter(
-      c => c.createdBy === req.user.id || c.assignedTo === req.user.id
-    ))
+router.get('/', async (req, res) => {
+  try {
+    const db = await getDb()
+    const filter = req.user.role === 'admin'
+      ? {}
+      : { $or: [{ createdBy: req.user.id }, { assignedTo: req.user.id }] }
+    const clients = await db.collection('clients')
+      .find(filter, { projection: { _id: 0 } })
+      .toArray()
+    res.json(clients)
+  } catch (e) {
+    res.status(500).json({ message: 'Server error' })
   }
 })
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const { name, phone, address, lat, lng } = req.body
   if (!name || !phone || !address) {
     return res.status(400).json({ message: 'Name, phone, and address required' })
   }
-  const db = readDb()
-  const newClient = {
-    id: uuidv4(),
-    name,
-    phone,
-    address,
-    lat: lat ?? null,
-    lng: lng ?? null,
-    createdBy: req.user.id,
-    assignedTo: req.user.role === 'deliverer' ? req.user.id : null,
-    createdAt: new Date().toISOString()
+  try {
+    const db = await getDb()
+    const newClient = {
+      id: uuidv4(), name, phone, address,
+      lat: lat ?? null, lng: lng ?? null,
+      createdBy: req.user.id,
+      assignedTo: req.user.role === 'deliverer' ? req.user.id : null,
+      createdAt: new Date().toISOString()
+    }
+    await db.collection('clients').insertOne(newClient)
+    const { _id, ...safe } = newClient
+    res.status(201).json(safe)
+  } catch (e) {
+    res.status(500).json({ message: 'Server error' })
   }
-  db.clients.push(newClient)
-  writeDb(db)
-  res.status(201).json(newClient)
 })
 
-router.put('/:id', (req, res) => {
-  const db = readDb()
-  const idx = db.clients.findIndex(c => c.id === req.params.id)
-  if (idx === -1) return res.status(404).json({ message: 'Client not found' })
-  const client = db.clients[idx]
-  if (req.user.role === 'deliverer' && client.createdBy !== req.user.id && client.assignedTo !== req.user.id) {
-    return res.status(403).json({ message: 'Forbidden' })
+router.put('/:id', async (req, res) => {
+  try {
+    const db = await getDb()
+    const client = await db.collection('clients').findOne({ id: req.params.id })
+    if (!client) return res.status(404).json({ message: 'Client not found' })
+    if (req.user.role === 'deliverer' && client.createdBy !== req.user.id && client.assignedTo !== req.user.id) {
+      return res.status(403).json({ message: 'Forbidden' })
+    }
+    const { name, phone, address } = req.body
+    const update = {}
+    if (name) update.name = name
+    if (phone) update.phone = phone
+    if (address) update.address = address
+    const result = await db.collection('clients').findOneAndUpdate(
+      { id: req.params.id },
+      { $set: update },
+      { returnDocument: 'after', projection: { _id: 0 } }
+    )
+    res.json(result)
+  } catch (e) {
+    res.status(500).json({ message: 'Server error' })
   }
-  const { name, phone, address } = req.body
-  if (name) db.clients[idx].name = name
-  if (phone) db.clients[idx].phone = phone
-  if (address) db.clients[idx].address = address
-  writeDb(db)
-  res.json(db.clients[idx])
 })
 
-router.delete('/:id', requireAdmin, (req, res) => {
-  const db = readDb()
-  const idx = db.clients.findIndex(c => c.id === req.params.id)
-  if (idx === -1) return res.status(404).json({ message: 'Client not found' })
-  db.clients.splice(idx, 1)
-  writeDb(db)
-  res.json({ message: 'Client deleted' })
+router.delete('/:id', requireAdmin, async (req, res) => {
+  try {
+    const db = await getDb()
+    const result = await db.collection('clients').deleteOne({ id: req.params.id })
+    if (result.deletedCount === 0) return res.status(404).json({ message: 'Client not found' })
+    res.json({ message: 'Client deleted' })
+  } catch (e) {
+    res.status(500).json({ message: 'Server error' })
+  }
 })
 
-router.patch('/:id/assign', requireAdmin, (req, res) => {
+router.patch('/:id/assign', requireAdmin, async (req, res) => {
   const { delivererId } = req.body
-  const db = readDb()
-  const idx = db.clients.findIndex(c => c.id === req.params.id)
-  if (idx === -1) return res.status(404).json({ message: 'Client not found' })
-  if (delivererId) {
-    const deliverer = db.users.find(u => u.id === delivererId && u.role === 'deliverer')
-    if (!deliverer) return res.status(404).json({ message: 'Deliverer not found' })
+  try {
+    const db = await getDb()
+    if (delivererId) {
+      const deliverer = await db.collection('users').findOne({ id: delivererId, role: 'deliverer' })
+      if (!deliverer) return res.status(404).json({ message: 'Deliverer not found' })
+    }
+    const result = await db.collection('clients').findOneAndUpdate(
+      { id: req.params.id },
+      { $set: { assignedTo: delivererId || null } },
+      { returnDocument: 'after', projection: { _id: 0 } }
+    )
+    if (!result) return res.status(404).json({ message: 'Client not found' })
+    res.json(result)
+  } catch (e) {
+    res.status(500).json({ message: 'Server error' })
   }
-  db.clients[idx].assignedTo = delivererId || null
-  writeDb(db)
-  res.json(db.clients[idx])
 })
 
 module.exports = router

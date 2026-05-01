@@ -1,15 +1,21 @@
-const fs = require('fs')
-const path = require('path')
+const { MongoClient } = require('mongodb')
 
-const DB_PATH = path.join(__dirname, '../data/db.json')
+const uri = process.env.MONGODB_URI
 
-function readDb() {
-  const raw = fs.readFileSync(DB_PATH, 'utf-8')
-  return JSON.parse(raw)
+// Cache the connection across serverless invocations
+let cachedClient = null
+let cachedDb = null
+
+async function getDb() {
+  if (cachedDb) return cachedDb
+
+  if (!uri) throw new Error('MONGODB_URI environment variable is not set')
+
+  const client = new MongoClient(uri, { serverSelectionTimeoutMS: 5000 })
+  await client.connect()
+  cachedClient = client
+  cachedDb = client.db('trayms')
+  return cachedDb
 }
 
-function writeDb(data) {
-  fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf-8')
-}
-
-module.exports = { readDb, writeDb }
+module.exports = { getDb }
