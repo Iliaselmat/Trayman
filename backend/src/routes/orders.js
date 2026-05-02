@@ -87,10 +87,28 @@ router.post('/', async (req, res) => {
     const assignedDelivererId = req.user.role === 'admin' && requestedDelivererId
       ? requestedDelivererId
       : req.user.id
+
+    let total = 0
+    const resolvedItems = []
+    for (const oi of items) {
+      const item = await db.collection('items').findOne({ id: oi.itemId })
+      if (!item) return res.status(400).json({ message: `Item not found: ${oi.itemId}` })
+      const qty = parseInt(oi.quantity)
+      // Support both new {weight,price}[] and legacy string[] with top-level price
+      const weightObj = Array.isArray(item.weights) && typeof item.weights[0] === 'object'
+        ? item.weights.find(w => w.weight === oi.weight)
+        : null
+      const price = weightObj ? parseFloat(weightObj.price) : parseFloat(item.price || 0)
+      const lineTotal = parseFloat((price * qty).toFixed(2))
+      total += lineTotal
+      resolvedItems.push({ itemId: oi.itemId, weight: oi.weight, quantity: qty, price, lineTotal })
+    }
+
     const newOrder = {
       id: uuidv4(), clientId,
       delivererId: assignedDelivererId,
-      items: items.map(i => ({ itemId: i.itemId, quantity: i.quantity, weight: i.weight })),
+      items: resolvedItems,
+      total: parseFloat(total.toFixed(2)),
       status: 'processing',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()

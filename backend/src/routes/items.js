@@ -18,17 +18,19 @@ router.get('/', authenticate, async (req, res) => {
 })
 
 router.post('/', authenticate, requireAdmin, async (req, res) => {
-  const { name, reference, category, price, weights } = req.body
-  if (!name || !reference || !category || price === undefined || !weights?.length) {
+  const { name, reference, category, weights } = req.body
+  if (!name || !reference || !category || !weights?.length) {
     return res.status(400).json({ message: 'All fields required' })
   }
+  const invalid = weights.some(w => !w.weight || w.price === undefined || parseFloat(w.price) <= 0)
+  if (invalid) return res.status(400).json({ message: 'Each weight must have a positive price' })
   try {
     const db = await getDb()
     const existing = await db.collection('items').findOne({ reference })
     if (existing) return res.status(409).json({ message: 'Reference already exists' })
     const newItem = {
       id: uuidv4(), name, reference, category,
-      price: parseFloat(price), weights,
+      weights: weights.map(w => ({ weight: w.weight, price: parseFloat(parseFloat(w.price).toFixed(2)) })),
       createdAt: new Date().toISOString()
     }
     await db.collection('items').insertOne(newItem)
@@ -40,15 +42,18 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
 })
 
 router.put('/:id', authenticate, requireAdmin, async (req, res) => {
-  const { name, reference, category, price, weights } = req.body
+  const { name, reference, category, weights } = req.body
   try {
     const db = await getDb()
     const update = {}
     if (name) update.name = name
     if (reference) update.reference = reference
     if (category) update.category = category
-    if (price !== undefined) update.price = parseFloat(price)
-    if (weights) update.weights = weights
+    if (weights) {
+      const invalid = weights.some(w => !w.weight || w.price === undefined || parseFloat(w.price) <= 0)
+      if (invalid) return res.status(400).json({ message: 'Each weight must have a positive price' })
+      update.weights = weights.map(w => ({ weight: w.weight, price: parseFloat(parseFloat(w.price).toFixed(2)) }))
+    }
     const result = await db.collection('items').findOneAndUpdate(
       { id: req.params.id },
       { $set: update },

@@ -59,7 +59,9 @@ export default function DelivererOrders() {
   }
 
   function getWeightsForItem(itemId) {
-    return items.find(i => i.id === itemId)?.weights || []
+    const item = items.find(i => i.id === itemId)
+    if (!item) return []
+    return item.weights.map(w => typeof w === 'object' ? w.weight : w)
   }
 
   async function handleSubmit(e) {
@@ -113,7 +115,7 @@ export default function DelivererOrders() {
         <table className="w-full min-w-[480px] text-sm">
           <thead className="bg-gray-50 border-b">
             <tr>
-              {[t('client'), t('status'), t('date'), t('actions')].map(h => (
+              {[t('client'), t('status'), t('total'), t('date'), t('actions')].map(h => (
                 <th key={h} className="text-left px-6 py-3 text-gray-500 font-medium">{h}</th>
               ))}
             </tr>
@@ -125,6 +127,7 @@ export default function DelivererOrders() {
                 <td className="px-6 py-4">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[o.status]}`}>{t(o.status)}</span>
                 </td>
+                <td className="px-6 py-4 text-gray-700 font-mono text-xs">{o.total != null ? `${o.total.toFixed(2)} MAD` : '—'}</td>
                 <td className="px-6 py-4 text-gray-500">{new Date(o.createdAt).toLocaleDateString()}</td>
                 <td className="px-6 py-4">
                   <div className="flex gap-3 flex-wrap">
@@ -243,6 +246,7 @@ export default function DelivererOrders() {
                       <th className="text-left px-4 py-2 text-gray-500 font-medium">{t('name')}</th>
                       <th className="text-left px-4 py-2 text-gray-500 font-medium">{t('weights')}</th>
                       <th className="text-left px-4 py-2 text-gray-500 font-medium">{t('qty')}</th>
+                      <th className="text-right px-4 py-2 text-gray-500 font-medium">{t('total')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
@@ -251,8 +255,15 @@ export default function DelivererOrders() {
                         <td className="px-4 py-2">{item.itemName}</td>
                         <td className="px-4 py-2">{item.weight}</td>
                         <td className="px-4 py-2">{item.quantity}</td>
+                        <td className="px-4 py-2 text-right font-medium">{item.lineTotal != null ? `${item.lineTotal.toFixed(2)}` : '—'}</td>
                       </tr>
                     ))}
+                    {detail.total != null && (
+                      <tr className="bg-gray-50 font-semibold text-sm">
+                        <td className="px-4 py-2" colSpan={3}>{t('orderTotal')}</td>
+                        <td className="px-4 py-2 text-right">{detail.total.toFixed(2)} MAD</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>

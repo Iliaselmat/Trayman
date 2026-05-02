@@ -70,6 +70,7 @@ export default {
   noItemsYet: 'No items yet',
   deleteItemConfirm: 'Delete this item?',
   selectOneWeight: 'Select at least one weight',
+  allWeightsPriceRequired: 'Enter a price for each selected weight',
 
   // Clients
   addClient: 'Add Client',
@@ -117,6 +118,25 @@ export default {
   createOrder: 'Create Order',
   markDelivered: 'Delivered',
   markCancelled: 'Cancel',
+
+  // Finances
+  finances: 'Finances',
+  collectedFromClients: 'Collected',
+  pendingCollection: 'Pending',
+  paidToAdmin: 'Paid to Admin',
+  balanceDue: 'Balance Due',
+  recordPayment: 'Record Payment',
+  details: 'Details',
+  amount: 'Amount',
+  noteOptional: 'Note (optional)',
+  deletePaymentConfirm: 'Delete this payment record?',
+  noPaymentsYet: 'No payments yet',
+  paymentHistory: 'Payment History',
+  deliveredOrdersList: 'Delivered Orders',
+  noDeliveredOrders: 'No delivered orders yet',
+  noDeliverers: 'No deliverers found',
+  orderTotal: 'Order Total',
+  total: 'Total',
 
   // Login
   loginTitle: 'Manufacturing Management System',

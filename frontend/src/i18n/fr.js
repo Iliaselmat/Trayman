@@ -70,6 +70,7 @@ export default {
   noItemsYet: 'Aucun article pour le moment',
   deleteItemConfirm: 'Supprimer cet article ?',
   selectOneWeight: 'Sélectionner au moins un poids',
+  allWeightsPriceRequired: 'Entrez un prix pour chaque poids sélectionné',
 
   // Clients
   addClient: 'Ajouter un client',
@@ -117,6 +118,25 @@ export default {
   createOrder: 'Créer la commande',
   markDelivered: 'Livré',
   markCancelled: 'Annuler',
+
+  // Finances
+  finances: 'Finances',
+  collectedFromClients: 'Collecté',
+  pendingCollection: 'En attente',
+  paidToAdmin: "Versé à l'admin",
+  balanceDue: 'Solde dû',
+  recordPayment: 'Enregistrer un paiement',
+  details: 'Détails',
+  amount: 'Montant',
+  noteOptional: 'Note (optionnelle)',
+  deletePaymentConfirm: 'Supprimer cet enregistrement de paiement ?',
+  noPaymentsYet: 'Aucun paiement enregistré',
+  paymentHistory: 'Historique des paiements',
+  deliveredOrdersList: 'Commandes livrées',
+  noDeliveredOrders: 'Aucune commande livrée',
+  noDeliverers: 'Aucun livreur trouvé',
+  orderTotal: 'Total de la commande',
+  total: 'Total',
 
   // Login
   loginTitle: 'Système de gestion de fabrication',

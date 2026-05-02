@@ -14,6 +14,7 @@ export default function AdminLayout() {
     { to: '/admin/items', label: t('items') },
     { to: '/admin/clients', label: t('clients') },
     { to: '/admin/orders', label: t('orders') },
+    { to: '/admin/finances', label: t('finances') },
   ]
 
   return (

@@ -9,6 +9,8 @@ const usersRoutes = require('./routes/users')
 const itemsRoutes = require('./routes/items')
 const clientsRoutes = require('./routes/clients')
 const ordersRoutes = require('./routes/orders')
+const paymentsRoutes = require('./routes/payments')
+const financesRoutes = require('./routes/finances')
 
 const app = express()
 
@@ -20,6 +22,8 @@ app.use('/api/users', usersRoutes)
 app.use('/api/items', itemsRoutes)
 app.use('/api/clients', clientsRoutes)
 app.use('/api/orders', ordersRoutes)
+app.use('/api/payments', paymentsRoutes)
+app.use('/api/finances', financesRoutes)
 
 async function seedAdmin() {
   try {

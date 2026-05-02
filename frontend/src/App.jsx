@@ -10,6 +10,7 @@ import AdminUsers from './pages/admin/Users'
 import AdminItems from './pages/admin/Items'
 import AdminClients from './pages/admin/Clients'
 import AdminOrders from './pages/admin/Orders'
+import AdminFinances from './pages/admin/Finances'
 import DelivererDashboard from './pages/deliverer/Dashboard'
 import DelivererClients from './pages/deliverer/Clients'
 import DelivererOrders from './pages/deliverer/Orders'
@@ -34,6 +35,7 @@ export default function App() {
               <Route path="items" element={<AdminItems />} />
               <Route path="clients" element={<AdminClients />} />
               <Route path="orders" element={<AdminOrders />} />
+              <Route path="finances" element={<AdminFinances />} />
             </Route>
             <Route
               path="/deliverer"

@@ -78,7 +78,9 @@ export default function AdminOrders() {
   }
 
   function getWeightsForItem(itemId) {
-    return items.find(i => i.id === itemId)?.weights || []
+    const item = items.find(i => i.id === itemId)
+    if (!item) return []
+    return item.weights.map(w => typeof w === 'object' ? w.weight : w)
   }
 
   async function handleSubmit(e) {
@@ -295,6 +297,8 @@ export default function AdminOrders() {
                       <th className="text-left px-4 py-2 text-gray-500 font-medium">{t('name')}</th>
                       <th className="text-left px-4 py-2 text-gray-500 font-medium">{t('weights')}</th>
                       <th className="text-left px-4 py-2 text-gray-500 font-medium">{t('qty')}</th>
+                      <th className="text-right px-4 py-2 text-gray-500 font-medium">{t('price')}</th>
+                      <th className="text-right px-4 py-2 text-gray-500 font-medium">{t('total')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
@@ -303,8 +307,16 @@ export default function AdminOrders() {
                         <td className="px-4 py-2">{item.itemName}</td>
                         <td className="px-4 py-2">{item.weight}</td>
                         <td className="px-4 py-2">{item.quantity}</td>
+                        <td className="px-4 py-2 text-right text-gray-500">{item.price != null ? `${item.price.toFixed(2)}` : '—'}</td>
+                        <td className="px-4 py-2 text-right font-medium">{item.lineTotal != null ? `${item.lineTotal.toFixed(2)}` : '—'}</td>
                       </tr>
                     ))}
+                    {detail.total != null && (
+                      <tr className="bg-gray-50 font-semibold text-sm">
+                        <td className="px-4 py-2" colSpan={4}>{t('orderTotal')}</td>
+                        <td className="px-4 py-2 text-right">{detail.total.toFixed(2)} MAD</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
