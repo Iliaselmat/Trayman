@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import api from '../../api/axios'
 import { useLang } from '../../context/LangContext'
+import { exportToExcel } from '../../utils/exportExcel'
 
 function Modal({ title, onClose, children, wide }) {
   return (
@@ -31,6 +32,17 @@ export default function AdminFinances() {
   }
   useEffect(() => { load() }, [])
 
+  function handleExport() {
+    const rows = data.map(d => ({
+      [t('deliverer')]: d.delivererName,
+      [t('collectedFromClients')] : `${d.deliveredTotal.toFixed(2)} MAD`,
+      [t('pendingCollection')]: `${d.pendingTotal.toFixed(2)} MAD`,
+      [t('paidToAdmin')]: `${d.paidTotal.toFixed(2)} MAD`,
+      [t('balanceDue')]: `${d.balance.toFixed(2)} MAD`,
+    }))
+    exportToExcel(rows, 'finances')
+  }
+
   async function handleRecordPayment(e) {
     e.preventDefault()
     setError('')
@@ -59,7 +71,15 @@ export default function AdminFinances() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('finances')}</h2>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-gray-900">{t('finances')}</h2>
+        <button
+          onClick={handleExport}
+          className="border border-gray-300 hover:bg-gray-50 text-gray-600 px-4 py-2 rounded-lg text-sm font-medium"
+        >
+          ⬇ {t('exportExcel')}
+        </button>
+      </div>
 
       <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
         <table className="w-full min-w-[640px] text-sm">

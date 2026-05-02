@@ -119,6 +119,14 @@ export default {
   markDelivered: 'Livré',
   markCancelled: 'Annuler',
 
+  // Dashboard
+  totalRevenue: 'Revenu total',
+  delivererBalances: 'Soldes livreurs',
+  ordersBreakdown: 'Répartition des commandes',
+  quickStats: 'Statistiques',
+  allPaidUp: 'Tout est à jour',
+  ofTotal: 'sur',
+
   // Finances
   finances: 'Finances',
   collectedFromClients: 'Collecté',
