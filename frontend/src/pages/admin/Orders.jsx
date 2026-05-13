@@ -34,6 +34,7 @@ export default function AdminOrders() {
   const [modal, setModal] = useState(false)
   const [form, setForm] = useState({ delivererId: '', clientId: '', orderItems: [{ itemId: '', quantity: 1, weight: '' }] })
   const [error, setError] = useState('')
+  const [statusError, setStatusError] = useState('')
 
   async function load() {
     const params = {}
@@ -83,10 +84,15 @@ export default function AdminOrders() {
     return item.weights.map(w => typeof w === 'object' ? w.weight : w)
   }
 
-  async function handleStatusChange(orderId, status) {
-    await api.patch(`/orders/${orderId}/status`, { status })
-    load()
-    setDetail(prev => prev ? { ...prev, status } : prev)
+  async function handleStatusChange(orderId, newStatus) {
+    setStatusError('')
+    try {
+      await api.patch(`/orders/${orderId}/status`, { status: newStatus })
+      setDetail(prev => prev ? { ...prev, status: newStatus } : prev)
+      load()
+    } catch (err) {
+      setStatusError(err.response?.data?.message || 'Failed to update status')
+    }
   }
 
   async function handleSubmit(e) {
@@ -180,7 +186,7 @@ export default function AdminOrders() {
                 </td>
                 <td className="px-6 py-4 text-gray-500">{new Date(o.createdAt).toLocaleDateString()}</td>
                 <td className="px-6 py-4">
-                  <button onClick={() => setDetail(o)} className="text-blue-600 hover:underline text-sm">{t('view')}</button>
+                  <button onClick={() => { setDetail(o); setStatusError('') }} className="text-blue-600 hover:underline text-sm">{t('view')}</button>
                 </td>
               </tr>
             ))}
@@ -311,6 +317,7 @@ export default function AdminOrders() {
                   </button>
                 ))}
               </div>
+              {statusError && <p className="text-red-500 text-xs mt-1">{statusError}</p>}
             </div>
             <div>
               <p className="text-gray-500 mb-2">{t('items')}</p>
