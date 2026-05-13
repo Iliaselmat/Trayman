@@ -25,7 +25,6 @@ export default function AdminStock() {
   const [items, setItems] = useState([])
   const [deliverers, setDeliverers] = useState([])
   const [delivererStock, setDelivererStock] = useState([])
-  const [selectedDeliverer, setSelectedDeliverer] = useState('')
 
   // Add to warehouse modal
   const [addModal, setAddModal] = useState(false)
@@ -42,27 +41,26 @@ export default function AdminStock() {
     setWarehouseStock(data)
   }
 
-  async function loadDelivererStock(id) {
-    if (!id) { setDelivererStock([]); return }
-    const { data } = await api.get(`/stock/deliverer/${id}`)
+  async function loadAllDelivererStock() {
+    const { data } = await api.get('/stock/allocations')
     setDelivererStock(data)
   }
 
   useEffect(() => {
     async function init() {
-      const [w, it, u] = await Promise.all([
+      const [w, it, u, ds] = await Promise.all([
         api.get('/stock'),
         api.get('/items'),
         api.get('/users'),
+        api.get('/stock/allocations'),
       ])
       setWarehouseStock(w.data)
       setItems(it.data)
       setDeliverers(u.data.filter(u => u.role === 'deliverer'))
+      setDelivererStock(ds.data)
     }
     init()
   }, [])
-
-  useEffect(() => { loadDelivererStock(selectedDeliverer) }, [selectedDeliverer])
 
   function getWeightsForItem(itemId) {
     const item = items.find(i => i.id === itemId)
@@ -107,7 +105,7 @@ export default function AdminStock() {
       setAllocSuccess(`✓ ${allocForm.quantity} × ${itemName} ${allocForm.weight} → ${delivererName}`)
       setAllocForm(f => ({ ...f, quantity: '' }))
       loadWarehouse()
-      if (selectedDeliverer === allocForm.delivererId) loadDelivererStock(selectedDeliverer)
+      loadAllDelivererStock()
     } catch (err) {
       setAllocError(err.response?.data?.message || 'Error')
     }
@@ -266,46 +264,46 @@ export default function AdminStock() {
 
       {/* ── Deliverer Stocks tab ── */}
       {tab === 'deliverers' && (
-        <div>
-          <div className="mb-4">
-            <select
-              value={selectedDeliverer}
-              onChange={e => setSelectedDeliverer(e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">{t('selectDeliverer')}</option>
-              {deliverers.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-            </select>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
-            <table className="w-full min-w-[400px] text-sm">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  {[t('name'), t('weights'), t('stockQty')].map(h => (
-                    <th key={h} className="text-left px-6 py-3 text-gray-500 font-medium">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {delivererStock.filter(s => s.quantity > 0).map(s => (
-                  <tr key={`${s.itemId}-${s.weight}`} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 font-medium text-gray-900">{s.itemName}</td>
-                    <td className="px-6 py-4">
-                      <span className="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded-full">{s.weight}</span>
-                    </td>
-                    <td className="px-6 py-4 font-semibold text-gray-900">{s.quantity}</td>
-                  </tr>
-                ))}
-                {(delivererStock.filter(s => s.quantity > 0).length === 0) && (
-                  <tr>
-                    <td colSpan={3} className="px-6 py-10 text-center text-gray-400">
-                      {selectedDeliverer ? t('noStockForDeliverer') : t('selectDeliverer')}
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+        <div className="space-y-6">
+          {deliverers.length === 0 && (
+            <p className="text-gray-400 text-sm">{t('noDeliverers')}</p>
+          )}
+          {deliverers.map(d => {
+            const rows = delivererStock.filter(s => s.delivererId === d.id && s.quantity > 0)
+            return (
+              <div key={d.id} className="bg-white rounded-xl shadow-sm overflow-x-auto">
+                <div className="px-6 py-4 border-b flex items-center justify-between">
+                  <h3 className="font-semibold text-gray-900">{d.name}</h3>
+                  <span className="text-xs text-gray-400">{rows.length} {t('items').toLowerCase()}</span>
+                </div>
+                <table className="w-full min-w-[400px] text-sm">
+                  <thead className="bg-gray-50 border-b">
+                    <tr>
+                      {[t('name'), t('weights'), t('stockQty')].map(h => (
+                        <th key={h} className="text-left px-6 py-3 text-gray-500 font-medium">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {rows.map(s => (
+                      <tr key={`${s.itemId}-${s.weight}`} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 font-medium text-gray-900">{s.itemName}</td>
+                        <td className="px-6 py-4">
+                          <span className="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded-full">{s.weight}</span>
+                        </td>
+                        <td className="px-6 py-4 font-semibold text-gray-900">{s.quantity}</td>
+                      </tr>
+                    ))}
+                    {rows.length === 0 && (
+                      <tr>
+                        <td colSpan={3} className="px-6 py-6 text-center text-gray-400 text-sm">{t('noStockForDeliverer')}</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )
+          })}
         </div>
       )}
 
