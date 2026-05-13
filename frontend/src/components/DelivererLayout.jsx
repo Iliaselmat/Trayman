@@ -12,6 +12,7 @@ export default function DelivererLayout() {
     { to: '/deliverer', label: t('dashboard'), end: true },
     { to: '/deliverer/clients', label: t('myClients') },
     { to: '/deliverer/orders', label: t('myOrders') },
+    { to: '/deliverer/route', label: t('routeMap') },
   ]
 
   return (

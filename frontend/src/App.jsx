@@ -14,6 +14,7 @@ import AdminFinances from './pages/admin/Finances'
 import DelivererDashboard from './pages/deliverer/Dashboard'
 import DelivererClients from './pages/deliverer/Clients'
 import DelivererOrders from './pages/deliverer/Orders'
+import DelivererRouteMap from './pages/deliverer/RouteMap'
 
 export default function App() {
   return (
@@ -48,6 +49,7 @@ export default function App() {
               <Route index element={<DelivererDashboard />} />
               <Route path="clients" element={<DelivererClients />} />
               <Route path="orders" element={<DelivererOrders />} />
+              <Route path="route" element={<DelivererRouteMap />} />
             </Route>
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>

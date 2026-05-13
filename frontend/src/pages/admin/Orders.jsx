@@ -83,6 +83,12 @@ export default function AdminOrders() {
     return item.weights.map(w => typeof w === 'object' ? w.weight : w)
   }
 
+  async function handleStatusChange(orderId, status) {
+    await api.patch(`/orders/${orderId}/status`, { status })
+    load()
+    setDetail(prev => prev ? { ...prev, status } : prev)
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
@@ -287,6 +293,24 @@ export default function AdminOrders() {
                 </span>
               </div>
               <div><p className="text-gray-500">{t('date')}</p><p className="font-medium">{new Date(detail.createdAt).toLocaleDateString()}</p></div>
+            </div>
+            <div>
+              <p className="text-gray-500 text-xs mb-2">{t('changeStatus')}</p>
+              <div className="flex flex-wrap gap-2">
+                {['processing', 'delivered', 'cancelled'].filter(s => s !== detail.status).map(s => (
+                  <button
+                    key={s}
+                    onClick={() => handleStatusChange(detail.id, s)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                      s === 'delivered' ? 'border-green-300 text-green-700 hover:bg-green-50' :
+                      s === 'cancelled' ? 'border-red-300 text-red-600 hover:bg-red-50' :
+                      'border-yellow-300 text-yellow-700 hover:bg-yellow-50'
+                    }`}
+                  >
+                    → {t(s)}
+                  </button>
+                ))}
+              </div>
             </div>
             <div>
               <p className="text-gray-500 mb-2">{t('items')}</p>

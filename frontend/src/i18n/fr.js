@@ -119,6 +119,14 @@ export default {
   markDelivered: 'Livré',
   markCancelled: 'Annuler',
 
+  // Route map
+  routeMap: 'Carte des tournées',
+  optimizedRoute: 'Itinéraire optimisé',
+  noClientsWithGps: "Aucun client avec position GPS. Ajoutez des clients avec GPS pour voir la carte.",
+  yourLocation: 'Votre position',
+  navigate: 'Naviguer',
+  changeStatus: 'Changer le statut',
+
   // Dashboard
   totalRevenue: 'Revenu total',
   delivererBalances: 'Soldes livreurs',

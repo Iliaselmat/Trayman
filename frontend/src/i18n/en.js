@@ -119,6 +119,14 @@ export default {
   markDelivered: 'Delivered',
   markCancelled: 'Cancel',
 
+  // Route map
+  routeMap: 'Route Map',
+  optimizedRoute: 'Optimized Route',
+  noClientsWithGps: 'No clients with GPS location yet. Add clients with GPS to see the route map.',
+  yourLocation: 'Your Location',
+  navigate: 'Navigate',
+  changeStatus: 'Change Status',
+
   // Dashboard
   totalRevenue: 'Total Revenue',
   delivererBalances: 'Deliverer Balances',
