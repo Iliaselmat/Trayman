@@ -31,6 +31,9 @@ export default function AdminStock() {
   const [addForm, setAddForm] = useState({ itemId: '', weight: '', quantity: '' })
   const [addError, setAddError] = useState('')
 
+  // Adjust quantity modal (warehouse or deliverer)
+  const [adjustModal, setAdjustModal] = useState(null) // { type: 'warehouse'|'deliverer', record, newQty, error }
+
   // Allocate form
   const [allocForm, setAllocForm] = useState({ delivererId: '', itemId: '', weight: '', quantity: '' })
   const [allocError, setAllocError] = useState('')
@@ -111,6 +114,37 @@ export default function AdminStock() {
     }
   }
 
+  async function handleAdjust(e) {
+    e.preventDefault()
+    setAdjustModal(m => ({ ...m, error: '' }))
+    const qty = parseInt(adjustModal.newQty)
+    if (isNaN(qty) || qty < 0) {
+      setAdjustModal(m => ({ ...m, error: 'Enter a valid quantity (0 or more)' }))
+      return
+    }
+    try {
+      if (adjustModal.type === 'warehouse') {
+        await api.patch('/stock/warehouse', {
+          itemId: adjustModal.record.itemId,
+          weight: adjustModal.record.weight,
+          quantity: qty,
+        })
+        loadWarehouse()
+      } else {
+        await api.patch('/stock/deliverer-stock', {
+          delivererId: adjustModal.record.delivererId,
+          itemId: adjustModal.record.itemId,
+          weight: adjustModal.record.weight,
+          quantity: qty,
+        })
+        loadAllDelivererStock()
+      }
+      setAdjustModal(null)
+    } catch (err) {
+      setAdjustModal(m => ({ ...m, error: err.response?.data?.message || 'Error' }))
+    }
+  }
+
   const tabLabels = {
     warehouse: t('warehouseStock'),
     allocate: t('allocateStock'),
@@ -149,7 +183,7 @@ export default function AdminStock() {
             </button>
           </div>
           <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
-            <table className="w-full min-w-[480px] text-sm">
+            <table className="w-full min-w-[520px] text-sm">
               <thead className="bg-gray-50 border-b">
                 <tr>
                   {[t('name'), t('weights'), t('currentStock'), t('actions')].map(h => (
@@ -169,12 +203,18 @@ export default function AdminStock() {
                         {s.quantity}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 flex gap-3">
                       <button
                         onClick={() => { setAddModal(true); setAddForm({ itemId: s.itemId, weight: s.weight, quantity: '' }); setAddError('') }}
                         className="text-blue-600 hover:underline text-sm"
                       >
                         + {t('restock')}
+                      </button>
+                      <button
+                        onClick={() => setAdjustModal({ type: 'warehouse', record: s, newQty: String(s.quantity), error: '' })}
+                        className="text-amber-600 hover:underline text-sm"
+                      >
+                        {t('edit')}
                       </button>
                     </td>
                   </tr>
@@ -276,10 +316,10 @@ export default function AdminStock() {
                   <h3 className="font-semibold text-gray-900">{d.name}</h3>
                   <span className="text-xs text-gray-400">{rows.length} {t('items').toLowerCase()}</span>
                 </div>
-                <table className="w-full min-w-[400px] text-sm">
+                <table className="w-full min-w-[460px] text-sm">
                   <thead className="bg-gray-50 border-b">
                     <tr>
-                      {[t('name'), t('weights'), t('stockQty')].map(h => (
+                      {[t('name'), t('weights'), t('stockQty'), t('actions')].map(h => (
                         <th key={h} className="text-left px-6 py-3 text-gray-500 font-medium">{h}</th>
                       ))}
                     </tr>
@@ -292,11 +332,19 @@ export default function AdminStock() {
                           <span className="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded-full">{s.weight}</span>
                         </td>
                         <td className="px-6 py-4 font-semibold text-gray-900">{s.quantity}</td>
+                        <td className="px-6 py-4">
+                          <button
+                            onClick={() => setAdjustModal({ type: 'deliverer', record: { ...s, delivererId: d.id }, newQty: String(s.quantity), error: '' })}
+                            className="text-amber-600 hover:underline text-sm"
+                          >
+                            {t('edit')}
+                          </button>
+                        </td>
                       </tr>
                     ))}
                     {rows.length === 0 && (
                       <tr>
-                        <td colSpan={3} className="px-6 py-6 text-center text-gray-400 text-sm">{t('noStockForDeliverer')}</td>
+                        <td colSpan={4} className="px-6 py-6 text-center text-gray-400 text-sm">{t('noStockForDeliverer')}</td>
                       </tr>
                     )}
                   </tbody>
@@ -355,6 +403,44 @@ export default function AdminStock() {
                 {t('add')}
               </button>
               <button type="button" onClick={() => setAddModal(false)} className="flex-1 border border-gray-300 py-2 rounded-lg text-gray-600 hover:bg-gray-50">
+                {t('cancel')}
+              </button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {/* Adjust Quantity Modal */}
+      {adjustModal && (
+        <Modal
+          title={`${t('edit')} — ${adjustModal.record.itemName} ${adjustModal.record.weight}`}
+          onClose={() => setAdjustModal(null)}
+        >
+          <form onSubmit={handleAdjust} className="space-y-4">
+            <p className="text-sm text-gray-500">
+              {adjustModal.type === 'warehouse'
+                ? t('currentStock')
+                : deliverers.find(d => d.id === adjustModal.record.delivererId)?.name}
+              {' · '}{t('currentStock')}: <span className="font-semibold text-gray-800">{adjustModal.record.quantity}</span>
+            </p>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('stockQty')} (new exact value)</label>
+              <input
+                type="number"
+                min="0"
+                value={adjustModal.newQty}
+                onChange={e => setAdjustModal(m => ({ ...m, newQty: e.target.value }))}
+                className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+                autoFocus
+              />
+            </div>
+            {adjustModal.error && <p className="text-red-500 text-sm">{adjustModal.error}</p>}
+            <div className="flex gap-3 pt-2">
+              <button type="submit" className="flex-1 bg-amber-500 hover:bg-amber-600 text-white py-2 rounded-lg font-medium">
+                {t('save')}
+              </button>
+              <button type="button" onClick={() => setAdjustModal(null)} className="flex-1 border border-gray-300 py-2 rounded-lg text-gray-600 hover:bg-gray-50">
                 {t('cancel')}
               </button>
             </div>

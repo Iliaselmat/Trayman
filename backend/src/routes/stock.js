@@ -109,6 +109,48 @@ router.post('/allocate', requireAdmin, async (req, res) => {
   }
 })
 
+// Set warehouse stock to exact quantity (admin correction)
+router.patch('/warehouse', requireAdmin, async (req, res) => {
+  const { itemId, weight, quantity } = req.body
+  const qty = parseInt(quantity)
+  if (!itemId || !weight || qty == null || qty < 0) {
+    return res.status(400).json({ message: 'itemId, weight and non-negative quantity required' })
+  }
+  try {
+    const db = await getDb()
+    const result = await db.collection('warehouseStock').findOneAndUpdate(
+      { itemId, weight },
+      { $set: { quantity: qty, updatedAt: new Date().toISOString() } },
+      { returnDocument: 'after', projection: { _id: 0 } }
+    )
+    if (!result) return res.status(404).json({ message: 'Stock record not found' })
+    res.json(result)
+  } catch (e) {
+    res.status(500).json({ message: 'Server error' })
+  }
+})
+
+// Set deliverer stock to exact quantity (admin correction)
+router.patch('/deliverer-stock', requireAdmin, async (req, res) => {
+  const { delivererId, itemId, weight, quantity } = req.body
+  const qty = parseInt(quantity)
+  if (!delivererId || !itemId || !weight || qty == null || qty < 0) {
+    return res.status(400).json({ message: 'All fields required' })
+  }
+  try {
+    const db = await getDb()
+    const result = await db.collection('delivererStock').findOneAndUpdate(
+      { delivererId, itemId, weight },
+      { $set: { quantity: qty, updatedAt: new Date().toISOString() } },
+      { returnDocument: 'after', projection: { _id: 0 } }
+    )
+    if (!result) return res.status(404).json({ message: 'Stock record not found' })
+    res.json(result)
+  } catch (e) {
+    res.status(500).json({ message: 'Server error' })
+  }
+})
+
 // All deliverer allocations (admin only)
 router.get('/allocations', requireAdmin, async (req, res) => {
   try {

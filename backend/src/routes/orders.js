@@ -134,15 +134,27 @@ router.patch('/:id/status', async (req, res) => {
       return res.status(403).json({ message: 'Forbidden' })
     }
 
-    // Deduct deliverer stock when marking as delivered for the first time
+    // Check and deduct deliverer stock when marking as delivered for the first time
     if (status === 'delivered' && order.status !== 'delivered') {
+      // Validate sufficient stock for every line item first
+      for (const oi of order.items) {
+        const stockDoc = await db.collection('delivererStock').findOne({
+          delivererId: order.delivererId, itemId: oi.itemId, weight: oi.weight
+        })
+        const available = stockDoc?.quantity ?? 0
+        if (available < oi.quantity) {
+          const itemDoc = await db.collection('items').findOne({ id: oi.itemId })
+          const itemName = itemDoc?.name || oi.itemId
+          return res.status(400).json({
+            message: `Not enough stock: ${itemName} ${oi.weight} (have ${available}, need ${oi.quantity})`
+          })
+        }
+      }
+      // All checks passed — deduct
       for (const oi of order.items) {
         await db.collection('delivererStock').updateOne(
           { delivererId: order.delivererId, itemId: oi.itemId, weight: oi.weight },
-          [{ $set: {
-            quantity: { $max: [0, { $subtract: [{ $ifNull: ['$quantity', 0] }, oi.quantity] }] },
-            updatedAt: new Date().toISOString(),
-          }}]
+          { $inc: { quantity: -oi.quantity }, $set: { updatedAt: new Date().toISOString() } }
         )
       }
     }
