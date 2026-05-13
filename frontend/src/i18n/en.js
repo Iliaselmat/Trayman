@@ -119,6 +119,24 @@ export default {
   markDelivered: 'Delivered',
   markCancelled: 'Cancel',
 
+  // Stock
+  stock: 'Stock',
+  warehouseStock: 'Warehouse',
+  allocateStock: 'Give to Deliverer',
+  delivererStocks: 'Deliverer Stocks',
+  addToWarehouse: 'Add to Warehouse',
+  restock: 'Restock',
+  currentStock: 'In Warehouse',
+  stockQty: 'Qty',
+  myStock: 'My Stock',
+  allocate: 'Allocate',
+  noStockYet: 'No stock recorded yet',
+  noStockForDeliverer: 'No stock allocated to this deliverer',
+  insufficientStock: 'Not enough warehouse stock',
+  selectWeightFirst: 'Select item first',
+  available: 'available',
+  unitsSent: 'units sent to deliverer',
+
   // Route map
   routeMap: 'Route Map',
   optimizedRoute: 'Optimized Route',

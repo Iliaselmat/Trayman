@@ -11,6 +11,7 @@ const clientsRoutes = require('./routes/clients')
 const ordersRoutes = require('./routes/orders')
 const paymentsRoutes = require('./routes/payments')
 const financesRoutes = require('./routes/finances')
+const stockRoutes = require('./routes/stock')
 
 const app = express()
 
@@ -24,6 +25,7 @@ app.use('/api/clients', clientsRoutes)
 app.use('/api/orders', ordersRoutes)
 app.use('/api/payments', paymentsRoutes)
 app.use('/api/finances', financesRoutes)
+app.use('/api/stock', stockRoutes)
 
 async function seedAdmin() {
   try {

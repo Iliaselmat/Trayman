@@ -13,6 +13,7 @@ export default function DelivererLayout() {
     { to: '/deliverer/clients', label: t('myClients') },
     { to: '/deliverer/orders', label: t('myOrders') },
     { to: '/deliverer/route', label: t('routeMap') },
+    { to: '/deliverer/stock', label: t('myStock') },
   ]
 
   return (

@@ -119,6 +119,24 @@ export default {
   markDelivered: 'Livré',
   markCancelled: 'Annuler',
 
+  // Stock
+  stock: 'Stock',
+  warehouseStock: 'Entrepôt',
+  allocateStock: 'Donner au livreur',
+  delivererStocks: 'Stocks livreurs',
+  addToWarehouse: "Ajouter à l'entrepôt",
+  restock: 'Réapprovisionner',
+  currentStock: 'En entrepôt',
+  stockQty: 'Qté',
+  myStock: 'Mon stock',
+  allocate: 'Allouer',
+  noStockYet: 'Aucun stock enregistré',
+  noStockForDeliverer: 'Aucun stock alloué à ce livreur',
+  insufficientStock: 'Stock entrepôt insuffisant',
+  selectWeightFirst: "Sélectionner l'article d'abord",
+  available: 'disponible',
+  unitsSent: 'unités envoyées au livreur',
+
   // Route map
   routeMap: 'Carte des tournées',
   optimizedRoute: 'Itinéraire optimisé',

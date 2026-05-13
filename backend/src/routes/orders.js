@@ -133,6 +133,20 @@ router.patch('/:id/status', async (req, res) => {
     if (req.user.role === 'deliverer' && order.delivererId !== req.user.id) {
       return res.status(403).json({ message: 'Forbidden' })
     }
+
+    // Deduct deliverer stock when marking as delivered for the first time
+    if (status === 'delivered' && order.status !== 'delivered') {
+      for (const oi of order.items) {
+        await db.collection('delivererStock').updateOne(
+          { delivererId: order.delivererId, itemId: oi.itemId, weight: oi.weight },
+          [{ $set: {
+            quantity: { $max: [0, { $subtract: [{ $ifNull: ['$quantity', 0] }, oi.quantity] }] },
+            updatedAt: new Date().toISOString(),
+          }}]
+        )
+      }
+    }
+
     const result = await db.collection('orders').findOneAndUpdate(
       { id: req.params.id },
       { $set: { status, updatedAt: new Date().toISOString() } },

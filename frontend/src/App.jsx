@@ -11,10 +11,12 @@ import AdminItems from './pages/admin/Items'
 import AdminClients from './pages/admin/Clients'
 import AdminOrders from './pages/admin/Orders'
 import AdminFinances from './pages/admin/Finances'
+import AdminStock from './pages/admin/Stock'
 import DelivererDashboard from './pages/deliverer/Dashboard'
 import DelivererClients from './pages/deliverer/Clients'
 import DelivererOrders from './pages/deliverer/Orders'
 import DelivererRouteMap from './pages/deliverer/RouteMap'
+import DelivererMyStock from './pages/deliverer/MyStock'
 
 export default function App() {
   return (
@@ -37,6 +39,7 @@ export default function App() {
               <Route path="clients" element={<AdminClients />} />
               <Route path="orders" element={<AdminOrders />} />
               <Route path="finances" element={<AdminFinances />} />
+              <Route path="stock" element={<AdminStock />} />
             </Route>
             <Route
               path="/deliverer"
@@ -50,6 +53,7 @@ export default function App() {
               <Route path="clients" element={<DelivererClients />} />
               <Route path="orders" element={<DelivererOrders />} />
               <Route path="route" element={<DelivererRouteMap />} />
+              <Route path="stock" element={<DelivererMyStock />} />
             </Route>
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
